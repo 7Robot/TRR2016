@@ -177,6 +177,13 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         } else {
             Mesure_Distance_Ultrason_D = 2000;
         }
+        if (Mesure_Timer_Ultrason_H_End) {
+            val32 = Mesure_Timer_Ultrason_H_End - Mesure_Timer_Ultrason_H_Start;
+            val32 = (val32 * 1115) >> 15;
+            Mesure_Distance_Ultrason_H = (uint16_t)(val32);
+        } else {
+            Mesure_Distance_Ultrason_H = 2000;
+        }
 
         ///
         /// Calcul de la commande angulaire du servo-moteur
@@ -188,16 +195,9 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
             delta_d = -DELTA_D_MAX;
         else if (delta_d > -DELTA_D_MIN && delta_d < DELTA_D_MIN)
             delta_d = 0;
-        direction = 0.5625 * delta_d;       // Coef de pente pour passer de [-80:80] à [-45:45]
+        direction = 0.05625 * delta_d;       // Coef de pente pour passer de [-800:800] à [-45:45]
         
 
-        if (Mesure_Timer_Ultrason_H_End) {
-            val32 = Mesure_Timer_Ultrason_H_End - Mesure_Timer_Ultrason_H_Start;
-            val32 = (val32 * 1115) >> 15;
-            Mesure_Distance_Ultrason_H = (uint16_t)(val32);
-        } else {
-            Mesure_Distance_Ultrason_H = 2000;
-        }
 
         if (Ultrason_H_Detect) {
             if (Mesure_Distance_Ultrason_H > (Threshold_US + ULTRASON_THRESOLD_TRIGGER)) {
@@ -269,7 +269,7 @@ void __attribute__ ((__interrupt__, no_auto_psv)) _CNInterrupt(void)
     IFS1bits.CNIF = 0; // Clear CN interrupt
     uint8_t Etat_Pin_Ultrason_G = (Etat_Port_C & (1 << ULTRASON_G_NUM_PIN));
     uint8_t Etat_Pin_Ultrason_D = (Etat_Port_C & (1 << ULTRASON_D_NUM_PIN));
-    uint8_t Etat_Pin_Ultrason_H = (Etat_Port_C & (1 << ULTRASON_D_NUM_PIN));
+    uint8_t Etat_Pin_Ultrason_H = (Etat_Port_C & (1 << ULTRASON_H_NUM_PIN));
     
 
     // si Etat_Ultrason mérite que l'on s'occupe de lui

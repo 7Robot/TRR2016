@@ -9,7 +9,7 @@
 
 volatile int direction = 0;  //doit être compris entre -45° et 45°
 extern volatile int Voiture_Must_Run;
-    
+
 void Timer_Asserv_Init(void)
 {
     
@@ -31,7 +31,7 @@ void Timer_Asserv_Init(void)
                 T5_SOURCE_INT, 500 );  // pour l'instant inutile...
     _T5IF = 0;
     // configuration des interruptions
-    ConfigIntTimer2(T5_INT_PRIOR_2 & T5_INT_ON);
+    ConfigIntTimer5(T5_INT_PRIOR_2 & T5_INT_ON);
     
 }
 
@@ -55,6 +55,11 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
 
     float pulse = (direction + 90)/90 + 0.5;
     
+    // 2 ms => tourne à gauche
+    // 1 ms => tourne à droite (gentillement)
+    // 0.9 ms => tourne à droite, bien...
+   
+    
     if (Voiture_Must_Run) {
         PIN_SERVO = 1;
         PWM_Moteurs (0.1, 0);   //  max à 0.5...
@@ -62,8 +67,9 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     }
     else {
          PWM_Moteurs (0, 0);
+         PIN_SERVO = 0;
     }
-        
+    
    _T2IF = 0;   // on baisse le flag
 }
 

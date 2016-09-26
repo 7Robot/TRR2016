@@ -52,8 +52,8 @@ void Init_Ultrasons (void);
 #define US3_IS_HAUT     1
 
 #define NB_TOURS        2
-#define DELTA_D_MAX     80
-#define DELTA_D_MIN     10
+#define DELTA_D_MAX     800
+#define DELTA_D_MIN     100
 
 void Init_Ultrasons(void);
 void Init_CN(void);
