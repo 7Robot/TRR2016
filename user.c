@@ -39,36 +39,26 @@ void Init_All(int callback){
     /* Initialize IO ports and peripherals */
     motion_free();
     InitTimers();
-    Init_Communication_RasPi();
+    //Init_Communication_RasPi();
     
-    Position Pos0 = {0,0,0};
-    set_position(Pos0);
+//    Position Pos0 = {0,0,0};
+//    set_position(Pos0);
     __delay_ms(200);
     Init_PWM();
-    Init_QEI();
-    Init_IT_AX12();
+//    Init_QEI();
+//    Init_IT_AX12();
     Gestion_IO_AU_Init();
     __delay_ms(500);
-    Init_ax12();
-    InitSick_VBat();
+//    Init_ax12();
+//    InitSick_VBat();
     Init_Ultrasons();
-    Init_Evitement();
-    motion_init(); // start asserv
-    __delay_ms(30);
-    set_position(Pos0);
+//    Init_Evitement();
+//    motion_init(); // start asserv
+//    __delay_ms(30);
+//    set_position(Pos0);
     
     TRISAbits.TRISA9 = 1;
-    
-    
-    
-	POMPE_HAUTE = 0;
-	POMPE_BASSE = 0;
-    TRIS_POMPE_HAUTE = 0;
-    TRIS_POMPE_BASSE = 0;
-    
-    if(callback) {
-        SendDone();
-    }
+
 }
 
 /*

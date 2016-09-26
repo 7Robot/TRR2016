@@ -14,7 +14,7 @@ void InitTimers()
     _NSTDIS = 0; // activation de la prioritÃ© des interruptions
     AD1PCFGL = 0xFFFF; //Pins analogiques en numÃ©rique pour que ATP marche !!
     
-    Timer_Asserv_Init();
+    //Timer_Asserv_Init();
     Timer_ms_Init();
     // info : timer 5 est utilisé par la mesure des sicks
     // info : timer 4 est utilisé par la mesure de l'ultrason

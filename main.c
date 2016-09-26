@@ -36,7 +36,6 @@ int main(int argc, char** argv) {
     //reglage_asserv();
     while (1)
     {
-        Faire_Actions_AX12();
         Gestion_IO_AU_Loop();
     }
 }

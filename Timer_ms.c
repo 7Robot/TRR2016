@@ -7,8 +7,8 @@
 #include <timer.h>
 
 volatile char Active_Delay_90 = 0;
-volatile long Delay_90 = 0;
-volatile char Delay_90_Over = 0;
+//volatile long Delay_90 = 0;
+//volatile char Delay_90_Over = 0;
 volatile long Delay_WatchDone = 0;
 
 
@@ -58,7 +58,7 @@ void __attribute__((interrupt,auto_psv)) _T3Interrupt(void)
     static uint8_t Etat_Laisse = 0;
     static uint8_t Count_Laisse = 0;
     uint8_t Etat_Pin_Laisse = PIN_LAISSE;
-    static char count_Evit = 10;
+    //static char count_Evit = 10;
     
     if (Etat_Pin_Laisse) {
         if (Count_Laisse < 30)
@@ -72,8 +72,8 @@ void __attribute__((interrupt,auto_psv)) _T3Interrupt(void)
         if (!Count_Laisse) {
             Etat_Laisse = 0;
             Active_Delay_90 = 1;
-            Delay_90 = 0;
-            SendStart();
+            //Delay_90 = 0;
+            //SendStart();
             IPC2bits.T3IP = 7;  // passage de cette IT en haute priorité, pour ne pas perdre le compte
             //Debug_Asserv_Start();
             //Debug_PWM_Start();
@@ -81,21 +81,21 @@ void __attribute__((interrupt,auto_psv)) _T3Interrupt(void)
     } else {
         if (Count_Laisse == 30) {
             Etat_Laisse = 1;
-            Active_Delay_90 = 0;
-            Delay_90 = 0;
+//            Active_Delay_90 = 0;
+//            Delay_90 = 0;
             IPC2bits.T3IP = 1;
         }
     }
     
-    count_Evit--;
-    if (!count_Evit) {
-        Must_do_Gestion_Evitement();
-        count_Evit = 10;
-    }
+//    count_Evit--;
+//    if (!count_Evit) {
+//        Must_do_Gestion_Evitement();
+//        count_Evit = 10;
+//    }
             
-    if (Delay_TimeOut_AX12) {
-        Delay_TimeOut_AX12 --;
-    }
+//    if (Delay_TimeOut_AX12) {
+//        Delay_TimeOut_AX12 --;
+//    }
 //    if (Maxtime_Seq_AX12) {
 //        Maxtime_Seq_AX12 --;
 //    }
@@ -112,28 +112,28 @@ void __attribute__((interrupt,auto_psv)) _T3Interrupt(void)
 	}
 
 
-    if (Delay_90 < 90000) {
-        if (Active_Delay_90) {
-            Delay_90 ++;
-        } else {
-            Delay_90 = 0;
-        }
-        Delay_90_Over = 0;
-    } else if (Delay_90 == 90000) {
-        Delay_90 ++;
-        IPC2bits.T3IP = 1;
-        Delay_90_Over = 1;
-    } else if (Delay_90 == 90001) {
-        Delay_90 ++;
-        SendEnd();
-    } else {
-        Eteindre_Pompes();
-        motion_free();
-        Delay_90_Over = 1;
-        if (!Active_Delay_90) {
-            Delay_90 = 0;
-        }
-    }
+ //   if (Delay_90 < 90000) {
+//        if (Active_Delay_90) {
+//            Delay_90 ++;
+//        } else {
+//            Delay_90 = 0;
+//        }
+//        Delay_90_Over = 0;
+//    } else if (Delay_90 == 90000) {
+//        Delay_90 ++;
+//        IPC2bits.T3IP = 1;
+//        Delay_90_Over = 1;
+//    } else if (Delay_90 == 90001) {
+//        Delay_90 ++;
+//        SendEnd();
+//    } else {
+//        Eteindre_Pompes();
+//        motion_free();
+//        Delay_90_Over = 1;
+//        if (!Active_Delay_90) {
+//            Delay_90 = 0;
+//        }
+//    }
 
    _T3IF = 0;   // on baisse le flag
 }

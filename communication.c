@@ -90,7 +90,7 @@ void SelectActionFromPi()
     uint8_t val8;
     char valc;
     
-    if (!Delay_90_Over) {
+    if (0 /*!Delay_90_Over*/) {
         // INIT
         if(ReceivedStringFromPi[1]=='I'
 	&& ReceivedStringFromPi[2]=='N'
