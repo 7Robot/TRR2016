@@ -77,8 +77,8 @@ void Gestion_Evitement_Every_few_ms(void)
                     //((!Get_Sick_Sector(2)) && SICK3_IS_FRONT && Motion_Free_Activ_Sick[2]) ||
                     //((!Get_Sick_Sector(3)) && SICK4_IS_FRONT && Motion_Free_Activ_Sick[3]) ||
             
-                    ((!Get_US_Sector(0)) && US1_IS_FRONT && Motion_Free_Activ_US[0]) ||
-                    ((!Get_US_Sector(1)) && US2_IS_FRONT && Motion_Free_Activ_US[1]) ||
+                    ((!Get_US_Sector(0)) && US1_IS_GAUCHE && Motion_Free_Activ_US[0]) ||
+                    ((!Get_US_Sector(1)) && US2_IS_GAUCHE && Motion_Free_Activ_US[1]) ||
             0;  // juste pour commentaires faciles
     
     Blocked_Back  = //((!Get_Sick_Sector(0)) && SICK1_IS_BACK && Motion_Free_Activ_Sick[0]) ||
@@ -86,8 +86,8 @@ void Gestion_Evitement_Every_few_ms(void)
                     //((!Get_Sick_Sector(2)) && SICK3_IS_BACK && Motion_Free_Activ_Sick[2]) ||
                     //((!Get_Sick_Sector(3)) && SICK4_IS_BACK && Motion_Free_Activ_Sick[3]) ||
             
-                    ((!Get_US_Sector(0)) && US1_IS_BACK && Motion_Free_Activ_US[0]) ||
-                    ((!Get_US_Sector(1)) && US2_IS_BACK && Motion_Free_Activ_US[1]) ||
+                    ((!Get_US_Sector(0)) && US1_IS_DROITE && Motion_Free_Activ_US[0]) ||
+                    ((!Get_US_Sector(1)) && US2_IS_DROITE && Motion_Free_Activ_US[1]) ||
             0; // juste pour commentaires faciles
     
     

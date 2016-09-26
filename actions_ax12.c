@@ -209,27 +209,6 @@ void Init_ax12() {
     __delay_ms(delay_min_ax);
  }
 
- void Activer_Pompes(void)
- {
-        POMPE_HAUTE = 1;
-        __delay_ms(50);
-        POMPE_BASSE = 1;
-        __delay_ms(50);
- }
-
-  void Eteindre_Pompes(void)
- {
-        POMPE_HAUTE = 0;
-        __delay_ms(50);
-        POMPE_BASSE = 0;
-        __delay_ms(50);
- }
-
- void Activer_Pompe_basse(void)
- {
-        POMPE_BASSE = 1;
-        __delay_ms(50);
- }
 
 
  

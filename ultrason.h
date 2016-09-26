@@ -5,7 +5,7 @@
 
 void Init_Ultrasons (void);
 
-#define NUMBER_OF_US                2
+#define NUMBER_OF_US                3
 #define ULTRASON_THRESOLD           250      // seuil d'alarme en mm
 #define ULTRASON_THRESOLD_TRIGGER   25      // zone du triger de schmitt
 
@@ -22,6 +22,11 @@ void Init_Ultrasons (void);
 //#define PULL_UP_ULTRASON_G    _CN26PUE
 #define ULTRASON_G_NUM_PIN     5
 
+#define PIN_ULTRASON_H        _LATC3            // RC3 = connecteur 5V n4
+#define TRIS_ULTRASON_H       _TRISC3
+#define PIN_CN_ULTRASON_H_IE  _CN28IE
+//#define PULL_UP_ULTRASON_H    _CN23PUE
+#define ULTRASON_H_NUM_PIN     3
 
 
 #define U_ETAT_OFF              0x00
@@ -32,10 +37,18 @@ void Init_Ultrasons (void);
 #define U_ETAT_WAIT0_OVERSHOOT  0x10
 #define U_ETAT_WAIT_FOR_RESTART 0x20
 
-#define US1_IS_FRONT  1
-#define US2_IS_FRONT  0
-#define US1_IS_BACK   0
-#define US2_IS_BACK   1
+
+#define US1_IS_GAUCHE   1
+#define US2_IS_GAUCHE   0
+#define US3_IS_GAUCHE   0
+
+#define US1_IS_DROITE   0
+#define US2_IS_DROITE   1
+#define US3_IS_DROITE   0
+
+#define US1_IS_HAUT     0
+#define US2_IS_HAUT     0
+#define US3_IS_HAUT     1
 
 
 void Init_Ultrasons(void);

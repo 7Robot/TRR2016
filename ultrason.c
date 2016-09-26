@@ -43,12 +43,16 @@ volatile uint16_t Mesure_Timer_Ultrason_G_Start = 0;
 volatile uint16_t Mesure_Timer_Ultrason_G_End = 0;
 volatile uint16_t Mesure_Timer_Ultrason_D_Start = 0;
 volatile uint16_t Mesure_Timer_Ultrason_D_End = 0;
+volatile uint16_t Mesure_Timer_Ultrason_H_Start = 0;
+volatile uint16_t Mesure_Timer_Ultrason_H_End = 0;
 
 volatile uint16_t Mesure_Distance_Ultrason_G = 3000;  // distance en mm
 volatile uint16_t Mesure_Distance_Ultrason_D = 3000;  // distance en mm
+volatile uint16_t Mesure_Distance_Ultrason_H = 3000;  // distance en mm
 
 uint8_t Ultrason_G_Detect = 0;
 uint8_t Ultrason_D_Detect = 0;
+uint8_t Ultrason_H_Detect = 0;
 
 volatile int Threshold_US = ULTRASON_THRESOLD;
 
@@ -57,9 +61,11 @@ volatile int Threshold_US = ULTRASON_THRESOLD;
 //volatile uint16_t count_Debug_Ultrason = 0;
 
 volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_G_Start = 0;
+volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_G_End = 0;
+volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_D_Start = 0;
 volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_D_End = 0;
-volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_G_Start = 0;
-volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_D_End = 0;
+volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_H_Start = 0;
+volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_H_End = 0;
 
 // pas en externe
 volatile uint8_t nb_Coups_Timers = 0;
@@ -68,8 +74,11 @@ void Init_Ultrasons (void)
 {
     PIN_CN_ULTRASON_G_IE = 0;     // desactivation de l'IT
     PIN_CN_ULTRASON_D_IE = 0;     // desactivation de l'IT
+    PIN_CN_ULTRASON_H_IE = 0;     // desactivation de l'IT
+
     TRIS_ULTRASON_G = 1;          // mise en input de la pin
     TRIS_ULTRASON_D = 1;          // mise en input de la pin
+    TRIS_ULTRASON_H = 1;          // mise en input de la pin
     
     CloseTimer4();
     __delay_ms(5); // attente de 5 ms pour bien tuer l'IT
@@ -78,6 +87,7 @@ void Init_Ultrasons (void)
     
     Ultrason_G_Detect = 0;
     Ultrason_D_Detect = 0;
+    Ultrason_H_Detect = 0;
     Threshold_US = ULTRASON_THRESOLD;
     
     OpenTimer4(T4_ON & T4_GATE_OFF & T4_PS_1_8 & T4_SOURCE_INT, 0xFFFF );
@@ -112,12 +122,15 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         TRIS_ULTRASON_G = 0;      // pin en sortie
         PIN_ULTRASON_D = 1;
         TRIS_ULTRASON_D = 0;      // pin en sortie
+        PIN_ULTRASON_H = 1;
+        TRIS_ULTRASON_H = 0;      // pin en sortie
         PR4 = 200;              // 40 us pour le spike de début
         Etat_Ultrason = U_ETAT_SEND1;
     } else if (Etat_Ultrason & U_ETAT_SEND1) {      // spike en cours => il faut le finir + lancer le truc de mesure
         //if (!count_Debug_Ultrason && Debug_Ultrason) { printf("$END_SPIKE;"); }
         PIN_ULTRASON_G = 0;
-        PIN_ULTRASON_D = 0;
+        PIN_ULTRASON_D = 0;         // Pins en entree
+        PIN_ULTRASON_H = 0;
         Etat_Ultrason = U_ETAT_WAIT;
         PR4 = 0xFFFF;           // 13.107 ms (overshoot)
         TMR4 = 0;   // reset du timer
@@ -127,12 +140,17 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         TRIS_ULTRASON_G = 1;      // on relache la pin
         PIN_CN_ULTRASON_D_IE = 1; // activation IT sur PIN
         TRIS_ULTRASON_D = 1;      // on relache la pin
+        PIN_CN_ULTRASON_H_IE = 1; // activation IT sur PIN
+        TRIS_ULTRASON_H = 1;      // on relache la pin
     } else if (Etat_Ultrason & U_ETAT_WAIT) {
         // on a attendu 13.107 ms, on vient lire les résultats
         PIN_CN_ULTRASON_G_IE = 0;
         PIN_CN_ULTRASON_D_IE = 0;
+        PIN_CN_ULTRASON_H_IE = 0;
         Last_For_Degug_Mesure_Timer_Ultrason_G_Start = Mesure_Timer_Ultrason_G_Start;
         Last_For_Degug_Mesure_Timer_Ultrason_D_Start = Mesure_Timer_Ultrason_D_Start;
+        Last_For_Degug_Mesure_Timer_Ultrason_H_Start = Mesure_Timer_Ultrason_H_Start;
+        Last_For_Degug_Mesure_Timer_Ultrason_H_End = Mesure_Timer_Ultrason_H_End;
         Last_For_Degug_Mesure_Timer_Ultrason_G_End = Mesure_Timer_Ultrason_G_End;
         Last_For_Degug_Mesure_Timer_Ultrason_D_End = Mesure_Timer_Ultrason_D_End;
         
@@ -156,7 +174,27 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         } else {
             Mesure_Distance_Ultrason_D = 2000;
         }
-        
+        if (Mesure_Timer_Ultrason_H_End) {
+            val32 = Mesure_Timer_Ultrason_H_End - Mesure_Timer_Ultrason_H_Start;
+            val32 = (val32 * 1115) >> 15;
+            Mesure_Distance_Ultrason_H = (uint16_t)(val32);
+        } else {
+            Mesure_Distance_Ultrason_H = 2000;
+        }
+
+        if (Ultrason_H_Detect) {
+            if (Mesure_Distance_Ultrason_H > (Threshold_US + ULTRASON_THRESOLD_TRIGGER)) {
+                Ultrason_H_Detect = 0;    // passage en zone ok
+                // ReleaseUltrason(1);         // on previent la PI
+            }
+        } else {
+            if (Mesure_Distance_Ultrason_H < (Threshold_US - ULTRASON_THRESOLD_TRIGGER)) {
+                Ultrason_H_Detect = 1; // passage en zone occupé
+                // DetectUltrason(1);		// on previent la PI
+            }
+        }
+
+        /*
         if (Ultrason_G_Detect) {
             if (Mesure_Distance_Ultrason_G > (Threshold_US + ULTRASON_THRESOLD_TRIGGER)) {
                 Ultrason_G_Detect = 0;    // passage en zone ok
@@ -179,12 +217,15 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
                 // DetectUltrason(2);		// on previent la PI
             }
         }
+        */
         
         
         Mesure_Timer_Ultrason_G_Start = 0;
         Mesure_Timer_Ultrason_G_End = 0;
         Mesure_Timer_Ultrason_D_Start = 0;
         Mesure_Timer_Ultrason_D_End = 0;
+        Mesure_Timer_Ultrason_H_Start = 0;
+        Mesure_Timer_Ultrason_H_End = 0;
         
         nb_Coups_Timers = 1;
         Etat_Ultrason = U_ETAT_WAIT_FOR_RESTART;
@@ -212,6 +253,7 @@ void __attribute__ ((__interrupt__, no_auto_psv)) _CNInterrupt(void)
     IFS1bits.CNIF = 0; // Clear CN interrupt
     uint8_t Etat_Pin_Ultrason_G = (Etat_Port_C & (1 << ULTRASON_G_NUM_PIN));
     uint8_t Etat_Pin_Ultrason_D = (Etat_Port_C & (1 << ULTRASON_D_NUM_PIN));
+    uint8_t Etat_Pin_Ultrason_H = (Etat_Port_C & (1 << ULTRASON_D_NUM_PIN));
     
 
     // si Etat_Ultrason mérite que l'on s'occupe de lui
@@ -234,6 +276,16 @@ void __attribute__ ((__interrupt__, no_auto_psv)) _CNInterrupt(void)
             Mesure_Timer_Ultrason_D_End = TMR4;
             if (Mesure_Timer_Ultrason_D_End < Mesure_Timer_Ultrason_D_Start)
                 Mesure_Timer_Ultrason_D_End = 0xFFFF;
+            //PIN_CN_ULTRASON_AR_IE = 0;     // desactivation de cette IT
+        }
+        if (Etat_Pin_Ultrason_H) {
+            if (!Mesure_Timer_Ultrason_H_Start) {
+                Mesure_Timer_Ultrason_H_Start = TMR4;
+            }
+        } else if (!Mesure_Timer_Ultrason_H_End && Mesure_Timer_Ultrason_H_Start) {
+            Mesure_Timer_Ultrason_H_End = TMR4;
+            if (Mesure_Timer_Ultrason_H_End < Mesure_Timer_Ultrason_H_Start)
+                Mesure_Timer_Ultrason_H_End = 0xFFFF;
             //PIN_CN_ULTRASON_AR_IE = 0;     // desactivation de cette IT
         }
     }
