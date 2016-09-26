@@ -7,7 +7,8 @@
 #include <timer.h>
 #include "Timer_ms.h"
 
-
+volatile int direction = 0;  //doit être compris entre -45° et 45°
+    
 void Timer_Asserv_Init(void)
 {
     
@@ -40,6 +41,7 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     PWM_Moteurs(commande_g, commande_d); */
 
     float pulse = 1.5;
+    pulse = (direction + 90)/90 + 0.5;
     int pulse_tic = 625*pulse;
 
     PIN_SERVO = 1;
