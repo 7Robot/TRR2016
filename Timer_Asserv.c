@@ -8,6 +8,7 @@
 #include "Timer_ms.h"
 
 volatile int direction = 0;  //doit être compris entre -45° et 45°
+extern volatile int Voiture_Must_Run;
     
 void Timer_Asserv_Init(void)
 {
@@ -54,10 +55,15 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
 
     float pulse = (direction + 90)/90 + 0.5;
     
-    PIN_SERVO = 1;
-    
-    Demarrage_T5(pulse);
-    
+    if (Voiture_Must_Run) {
+        PIN_SERVO = 1;
+        PWM_Moteurs (0.1, 0);   //  max à 0.5...
+        Demarrage_T5(pulse);
+    }
+    else {
+         PWM_Moteurs (0, 0);
+    }
+        
    _T2IF = 0;   // on baisse le flag
 }
 
