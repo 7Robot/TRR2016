@@ -32,10 +32,12 @@
 
 #include "main.h"
 #include <timer.h>
+#include <math.h>
 
 // principe : petit spike sur la pin (qq usecs) pin en sortie
 // puis attente, avec mesure du temps à 1       pin en entrée
 // attente 50 ms entre 2 spikes
+volatile uint8_t cpt_arrivee;
 
 volatile uint8_t Etat_Ultrason = 0;
 
@@ -174,6 +176,20 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         } else {
             Mesure_Distance_Ultrason_D = 2000;
         }
+
+        ///
+        /// Calcul de la commande angulaire du servo-moteur
+        ///
+        int delta_d = Mesure_Distance_Ultrason_D - Mesure_Distance_Ultrason_G;
+        if (delta_d > DELTA_D_MAX)
+            delta_d = DELTA_D_MAX;
+        else if (delta_d < -DELTA_D_MAX)
+            delta_d = -DELTA_D_MAX;
+        else if (delta_d > -DELTA_D_MIN && delta_d < DELTA_D_MIN)
+            delta_d = 0;
+        direction = 0.5625 * delta_d;       // Coef de pente pour passer de [-80:80] à [-45:45]
+        
+
         if (Mesure_Timer_Ultrason_H_End) {
             val32 = Mesure_Timer_Ultrason_H_End - Mesure_Timer_Ultrason_H_Start;
             val32 = (val32 * 1115) >> 15;
@@ -185,12 +201,11 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         if (Ultrason_H_Detect) {
             if (Mesure_Distance_Ultrason_H > (Threshold_US + ULTRASON_THRESOLD_TRIGGER)) {
                 Ultrason_H_Detect = 0;    // passage en zone ok
-                // ReleaseUltrason(1);         // on previent la PI
             }
         } else {
             if (Mesure_Distance_Ultrason_H < (Threshold_US - ULTRASON_THRESOLD_TRIGGER)) {
                 Ultrason_H_Detect = 1; // passage en zone occupé
-                // DetectUltrason(1);		// on previent la PI
+                cpt_arrivee++;
             }
         }
 
