@@ -41,17 +41,17 @@ void Init_PWM(void)
     P1TPER = 1500;
 
     P1DC1 = 0;// réglage des rapports cycliques, pour l'instant on mets 0 lors de l'initialisation
-    P1DC2 = 0;
+    //P1DC2 = 0;
 
     MOTOR_BREAK1_tris = 0;
-    MOTOR_BREAK2_tris = 0;
+    //MOTOR_BREAK2_tris = 0;
     MOTOR_DIR1_tris= 0;
-    MOTOR_DIR2_tris = 0;
+    //MOTOR_DIR2_tris = 0;
     // Activation en sortie des pin de sens du PONT en H
     MOTOR_BREAK1 = 0;
-    MOTOR_BREAK2 = 0;
+    //MOTOR_BREAK2 = 0;
     MOTOR_DIR1= 0;
-    MOTOR_DIR2 = 0;
+    //MOTOR_DIR2 = 0;
 
 
 }
