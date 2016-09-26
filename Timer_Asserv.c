@@ -52,15 +52,10 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     // mettre ici les pwm gauche et droit
     PWM_Moteurs(commande_g, commande_d); */
 
-    float pulse = 1.5;
-<<<<<<< HEAD
+    float pulse = (direction + 90)/90 + 0.5;
     
-=======
-    pulse = (direction + 90)/90 + 0.5;
-    int pulse_tic = 625*pulse;
-
->>>>>>> b0d071ea41b37e855369ea6b72f2b5426ad3bc4d
     PIN_SERVO = 1;
+    
     
     Demarrage_T5(pulse);
     
