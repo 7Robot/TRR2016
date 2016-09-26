@@ -7,19 +7,20 @@
 #include <timer.h>
 
 volatile char Active_Delay_90 = 0;
-//volatile long Delay_90 = 0;
-//volatile char Delay_90_Over = 0;
+volatile long Delay_90 = 0;
+
+volatile char Delay_90_Over = 0;
 volatile long Delay_WatchDone = 0;
 
 
-void Timer_ms_Init(int pulse_tic)
+void Timer_ms_Init(void)
 {
 	// activation du Timer3
     OpenTimer3(T3_ON &
                 T3_IDLE_CON &
                 T3_GATE_OFF &
                 T3_PS_1_64 &
-                T3_SOURCE_INT, pulse_tic ); // 625 pour 1ms
+                T3_SOURCE_INT, 625 ); // 625 pour 1ms
     // configuration des interruptions
     ConfigIntTimer3(T3_INT_PRIOR_1 & T3_INT_ON);
     //IPC2bits.T3IP = 7
@@ -55,39 +56,37 @@ void Raz_Delay_WatchDone (void)
 // every ms
 void __attribute__((interrupt,auto_psv)) _T3Interrupt(void) 
 {
-//
-//    static uint8_t Etat_Laisse = 0;
-//    static uint8_t Count_Laisse = 0;
-//    uint8_t Etat_Pin_Laisse = PIN_LAISSE;
-//    //static char count_Evit = 10;
-//
-//    if (Etat_Pin_Laisse) {
-//        if (Count_Laisse < 30)
-//            Count_Laisse ++;
-//    } else {
-//        if (Count_Laisse)
-//            Count_Laisse --;
-//    }
-//
-//    if (Etat_Laisse) {
-//        if (!Count_Laisse) {
-//            Etat_Laisse = 0;
-//            Active_Delay_90 = 1;
-//            //Delay_90 = 0;
-//            //SendStart();
-//            IPC2bits.T3IP = 7;  // passage de cette IT en haute priorité, pour ne pas perdre le compte
-//            //Debug_Asserv_Start();
-//            //Debug_PWM_Start();
-//        }
-//    } else {
-//        if (Count_Laisse == 30) {
-//            Etat_Laisse = 1;
-////            Active_Delay_90 = 0;
-////            Delay_90 = 0;
-//            IPC2bits.T3IP = 1;
-//        }
-//    }
-//
+
+
+    static uint8_t Etat_Laisse = 0;
+    static uint8_t Count_Laisse = 0;
+    uint8_t Etat_Pin_Laisse = PIN_LAISSE;
+    //static char count_Evit = 10;
+
+    if (Etat_Pin_Laisse) {
+        if (Count_Laisse < 30)
+            Count_Laisse ++;
+    } else {
+        if (Count_Laisse)
+            Count_Laisse --;
+    }
+
+    if (Etat_Laisse) {
+        if (!Count_Laisse) {
+            Etat_Laisse = 0;
+            Active_Delay_90 = 1;
+            //IPC2bits.T3IP = 7;  // passage de cette IT en haute priorité, pour ne pas perdre le compte
+            // pour la TRR2016 pas besoin de précision sur le délais max...
+        }
+    } else {
+        if (Count_Laisse == 30) {
+            Etat_Laisse = 1;
+            Active_Delay_90 = 0;
+            Delay_90 = 0;
+            IPC2bits.T3IP = 1;
+        }
+    }
+
 ////    count_Evit--;
 ////    if (!count_Evit) {
 ////        Must_do_Gestion_Evitement();
@@ -112,33 +111,26 @@ void __attribute__((interrupt,auto_psv)) _T3Interrupt(void)
 //		}
 //	}
 //
-//
-// //   if (Delay_90 < 90000) {
-////        if (Active_Delay_90) {
-////            Delay_90 ++;
-////        } else {
-////            Delay_90 = 0;
-////        }
-////        Delay_90_Over = 0;
-////    } else if (Delay_90 == 90000) {
-////        Delay_90 ++;
-////        IPC2bits.T3IP = 1;
-////        Delay_90_Over = 1;
-////    } else if (Delay_90 == 90001) {
-////        Delay_90 ++;
-////        SendEnd();
-////    } else {
-////        Eteindre_Pompes();
-////        motion_free();
-////        Delay_90_Over = 1;
-////        if (!Active_Delay_90) {
-////            Delay_90 = 0;
-////        }
-////    }
 
-    PIN_SERVO = 0;
+    if (Delay_90 < 90000) {
+        if (Active_Delay_90) {
+            Delay_90 ++;
+        } else {
+            Delay_90 = 0;
+        }
+        Delay_90_Over = 0;
+    } else if (Delay_90 == 90000) {
+        Delay_90 ++;
+        IPC2bits.T3IP = 1;      // repassage low priority...
+        Delay_90_Over = 1;
+    } else {
+        Delay_90_Over = 1;
+        if (!Active_Delay_90) {
+            Delay_90 = 0;
+        }
+    }
 
-    OpenTimer3(T3_OFF,937);
+
 
    _T3IF = 0;   // on baisse le flag
 }

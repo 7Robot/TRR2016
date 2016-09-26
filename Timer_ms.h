@@ -9,7 +9,7 @@
 
 extern volatile char Delay_90_Over;
 
-void Timer_ms_Init(int);
+void Timer_ms_Init(void);
 
 //unsigned int Get_Maxtime_Seq_AX12(void);
 //void Set_Maxtime_Seq_AX12(unsigned int val);
