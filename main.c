@@ -25,7 +25,6 @@
 #include <stdint.h>        // Includes uint16_t definition
 #include <stdio.h>         // Includes sprintf
 #include <stdbool.h>       // Includes true/false definition
-#include <math.h>
 
 #include "main.h"
 

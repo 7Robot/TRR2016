@@ -32,7 +32,6 @@
 
 #include "main.h"
 #include <timer.h>
-#include <math.h>
 
 // principe : petit spike sur la pin (qq usecs) pin en sortie
 // puis attente, avec mesure du temps à 1       pin en entrée
@@ -55,6 +54,8 @@ volatile uint16_t Mesure_Distance_Ultrason_H = 3000;  // distance en mm
 uint8_t Ultrason_G_Detect = 0;
 uint8_t Ultrason_D_Detect = 0;
 uint8_t Ultrason_H_Detect = 0;
+
+extern volatile int direction;
 
 volatile int Threshold_US = ULTRASON_THRESOLD;
 
