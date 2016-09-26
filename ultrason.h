@@ -22,6 +22,7 @@ void Init_Ultrasons (void);
 //#define PULL_UP_ULTRASON_G    _CN26PUE
 #define ULTRASON_G_NUM_PIN     5
 
+// 
 #define PIN_ULTRASON_H        _LATC3            // RC3 = connecteur 5V n4
 #define TRIS_ULTRASON_H       _TRISC3
 #define PIN_CN_ULTRASON_H_IE  _CN28IE

@@ -56,7 +56,6 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     
     PIN_SERVO = 1;
     
-    
     Demarrage_T5(pulse);
     
    _T2IF = 0;   // on baisse le flag
@@ -68,7 +67,7 @@ void Demarrage_T5(float temps_ms) {
     temps_ms = temps_ms * 625;
     
     Var_Timer = temps_ms ;
-    if (Var_Timer > 0xFFFF) {
+    if (Var_Timer > 0xFFFF) {       // max matos à 13 ms environ...
         Var_Timer = 0xFFFF;
     } else if (Var_Timer < 10) {
         Var_Timer = 10;

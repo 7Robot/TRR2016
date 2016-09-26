@@ -7,6 +7,8 @@ void Gestion_IO_AU_Init(void)
     TRIS_DETECT_10V = 1;
     TRIS_TEAM = 1;  // input for bouton vert/violet(rouge)
     TRIS_LAISSE = 1;            // input for laisse
+    
+    TRIS_SERVO = 0;
 }
 
 void Gestion_IO_AU_Loop(void){
