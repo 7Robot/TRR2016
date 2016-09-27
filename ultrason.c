@@ -32,7 +32,7 @@
 
 #include "main.h"
 #include <timer.h>
-#include "math.h"
+#include <math.h>
 
 // principe : petit spike sur la pin (qq usecs) pin en sortie
 // puis attente, avec mesure du temps à 1       pin en entrée
@@ -74,6 +74,10 @@ volatile uint16_t Last_For_Degug_Mesure_Timer_Ultrason_H_End = 0;
 
 // pas en externe
 volatile uint8_t nb_Coups_Timers = 0;
+
+float signe(float val);
+
+float linear_mapping(float value, float oldinf, float oldsup, float newinf, float newsup);
 
 void Init_Ultrasons (void)
 {
@@ -200,13 +204,13 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         direction = 0.05625 * delta_d;       // Coef de pente pour passer de [-800:800] à [-45:45] => ((delta_d - 100)/(800-100))*45
         */
         direction = 0;//ditrection par defaut
-        if (abs(delta_d)>DELTA_D_MAX){
+        if (fabsf(delta_d)>DELTA_D_MAX){
             //on est au dela du seuil, on braque a fond
             direction = DIRECTION_MAX;
-        } else if (abs(delta_d)>DELTA_D_MIN) {
+        } else if ( fabsf(delta_d)>DELTA_D_MIN) {
             //on est entre 100 et 800
             direction = signe(delta_d) * 
-                    linear_mapping(abs(delta_d),
+                    linear_mapping( fabsf(delta_d),
                     DELTA_D_MIN, DELTA_D_MAX,
                     DIRECTION_MIN, DIRECTION_MAX );
             //on passe la valeur absolue de [100,800] a [0,45] puis on multiplie par le signe
@@ -347,4 +351,16 @@ int Get_US_Sector(int US)
 void Set_Threshold_US(int limit_mm)
 {
     Threshold_US = limit_mm;
+}
+
+float signe(float val){
+    if (val <0){
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+float linear_mapping(float value, float oldinf, float oldsup, float newinf, float newsup){
+    return ((value-oldinf)/(oldsup-oldinf)*(newsup-newinf))+newinf;
 }
