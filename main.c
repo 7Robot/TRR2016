@@ -35,7 +35,9 @@ int main(int argc, char** argv) {
     //reglage_asserv();
     while (1)
     {
-        Gestion_IO_AU_Loop();
+        //Gestion_IO_AU_Loop();
+        PWM_Moteurs(10, 0);   //  max à 0.5...
+
     }
 }
 

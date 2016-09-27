@@ -37,7 +37,7 @@ void Init_All(int callback){
     /* Configure the oscillator for the device */
     ConfigureOscillator();
     /* Initialize IO ports and peripherals */
-    motion_free();
+    //motion_free();
     InitTimers();
     //Init_Communication_RasPi();
     

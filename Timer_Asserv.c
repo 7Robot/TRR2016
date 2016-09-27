@@ -63,7 +63,7 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     
     if (Voiture_Must_Run && !fin_course) {
         PIN_SERVO = 1;
-        PWM_Moteurs (0.1, 0);   //  max à 0.5...
+        PWM_Moteurs(0.1, 0);   //  max à 0.5...
         Demarrage_T5(pulse);
     }
     else {

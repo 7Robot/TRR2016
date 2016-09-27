@@ -13,7 +13,8 @@ volatile char Delay_90_Over = 0;
 volatile long Delay_WatchDone = 0;
 
 volatile int Voiture_Must_Run  = 0;
-
+extern volatile uint8_t cpt_arrivee;
+extern volatile uint8_t fin_course;
 
 void Timer_ms_Init(void)
 {
@@ -78,6 +79,8 @@ void __attribute__((interrupt,auto_psv)) _T3Interrupt(void)
             Etat_Laisse = 0;
             Active_Delay_90 = 1;
             Voiture_Must_Run = 1;
+            cpt_arrivee = 0;
+            fin_course = 0;
             //IPC2bits.T3IP = 7;  // passage de cette IT en haute priorité, pour ne pas perdre le compte
             // pour la TRR2016 pas besoin de précision sur le délais max...
         }
