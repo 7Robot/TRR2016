@@ -36,7 +36,8 @@
 // principe : petit spike sur la pin (qq usecs) pin en sortie
 // puis attente, avec mesure du temps à 1       pin en entrée
 // attente 50 ms entre 2 spikes
-volatile uint8_t cpt_arrivee;
+volatile uint8_t cpt_arrivee = 0;
+volatile uint8_t fin_course = 0;
 
 volatile uint8_t Etat_Ultrason = 0;
 
@@ -207,6 +208,8 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
             if (Mesure_Distance_Ultrason_H < (Threshold_US - ULTRASON_THRESOLD_TRIGGER)) {
                 Ultrason_H_Detect = 1; // passage en zone occupé
                 cpt_arrivee++;
+                if (cpt_arrivee >= NB_TOURS)
+                    fin_course = 1;
             }
         }
 

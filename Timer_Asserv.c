@@ -9,6 +9,7 @@
 
 volatile int direction = 0;  //doit être compris entre -45° et 45°
 extern volatile int Voiture_Must_Run;
+extern volatile uint8_t fin_course;
 
 void Timer_Asserv_Init(void)
 {
@@ -60,7 +61,7 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     // 0.9 ms => tourne à droite, bien...
    
     
-    if (Voiture_Must_Run) {
+    if (Voiture_Must_Run && !fin_course) {
         PIN_SERVO = 1;
         PWM_Moteurs (0.1, 0);   //  max à 0.5...
         Demarrage_T5(pulse);
