@@ -32,6 +32,7 @@
 
 #include "main.h"
 #include <timer.h>
+#include "math.h"
 
 // principe : petit spike sur la pin (qq usecs) pin en sortie
 // puis attente, avec mesure du temps à 1       pin en entrée
@@ -190,15 +191,26 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         /// Calcul de la commande angulaire du servo-moteur
         ///
         int delta_d = Mesure_Distance_Ultrason_D - Mesure_Distance_Ultrason_G;
-        if (delta_d > DELTA_D_MAX)
+        /*if (delta_d > DELTA_D_MAX)
             delta_d = DELTA_D_MAX;
         else if (delta_d < -DELTA_D_MAX)
             delta_d = -DELTA_D_MAX;
         else if (delta_d > -DELTA_D_MIN && delta_d < DELTA_D_MIN)
             delta_d = 0;
-        direction = 0.05625 * delta_d;       // Coef de pente pour passer de [-800:800] à [-45:45]
-        
-
+        direction = 0.05625 * delta_d;       // Coef de pente pour passer de [-800:800] à [-45:45] => ((delta_d - 100)/(800-100))*45
+        */
+        direction = 0;//ditrection par defaut
+        if (abs(delta_d)>DELTA_D_MAX){
+            //on est au dela du seuil, on braque a fond
+            direction = DIRECTION_MAX;
+        } else if (abs(delta_d)>DELTA_D_MIN) {
+            //on est entre 100 et 800
+            direction = signe(delta_d) * 
+                    linear_mapping(abs(delta_d),
+                    DELTA_D_MIN, DELTA_D_MAX,
+                    DIRECTION_MIN, DIRECTION_MAX );
+            //on passe la valeur absolue de [100,800] a [0,45] puis on multiplie par le signe
+        }
 
         if (Ultrason_H_Detect) {
             if (Mesure_Distance_Ultrason_H > (Threshold_US + ULTRASON_THRESOLD_TRIGGER)) {
