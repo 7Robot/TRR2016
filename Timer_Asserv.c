@@ -54,7 +54,7 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     // mettre ici les pwm gauche et droit
     PWM_Moteurs(commande_g, commande_d); */
 
-    float pulse = (direction + 90)/90 + 0.5;
+    float pulse = (direction + 45)/90 + 0.5;
     
     // 2 ms => tourne à gauche
     // 1 ms => tourne à droite (gentillement)
@@ -63,7 +63,7 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     
     if (Voiture_Must_Run && !fin_course) {
         PIN_SERVO = 1;
-        PWM_Moteurs(0.1, 0);   //  max à 0.5...
+        PWM_Moteurs(30, 0);   //  max à 50...
         Demarrage_T5(pulse);
     }
     else {

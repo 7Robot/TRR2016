@@ -79,6 +79,8 @@ float signe(float val);
 
 float linear_mapping(float value, float oldinf, float oldsup, float newinf, float newsup);
 
+float min(float a, float b);
+
 void Init_Ultrasons (void)
 {
     PIN_CN_ULTRASON_G_IE = 0;     // desactivation de l'IT
@@ -194,6 +196,9 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         ///
         /// Calcul de la commande angulaire du servo-moteur
         ///
+        Mesure_Distance_Ultrason_G = min(Mesure_Distance_Ultrason_G, 800);
+        Mesure_Distance_Ultrason_D = min(Mesure_Distance_Ultrason_D, 800);
+
         int delta_d = Mesure_Distance_Ultrason_G - Mesure_Distance_Ultrason_D;
         /*if (delta_d > DELTA_D_MAX)
             delta_d = DELTA_D_MAX;
@@ -353,14 +358,23 @@ void Set_Threshold_US(int limit_mm)
     Threshold_US = limit_mm;
 }
 
+float min(float a, float b){
+    if (a > b){
+        return b;
+    }
+    return a;
+}
+
 float signe(float val){
     if (val <0){
         return -1;
-    } else {
+    } else if (val > 0) {
         return 1;
+    } else {
+        return 0;
     }
 }
 
-float linear_mapping(float value, float oldinf, float oldsup, float newinf, float newsup){
-    return ((value-oldinf)/(oldsup-oldinf)*(newsup-newinf))+newinf;
+float linear_mapping(float value, float xinf, float xsup, float yinf, float ysup){
+    return (((value-xinf)/(xsup-xinf))*(ysup-yinf))+yinf;
 }
