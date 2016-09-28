@@ -11,6 +11,9 @@ volatile float direction = 0;  //doit être compris entre -45° et 45°
 extern volatile int Voiture_Must_Run;
 extern volatile uint8_t fin_course;
 
+extern volatile int delta_d;
+extern volatile int somme_us;
+
 void Timer_Asserv_Init(void)
 {
     
@@ -61,10 +64,14 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     // 1 ms => tourne à droite (gentillement)
     // 0.9 ms => tourne à droite, bien...
    
-    
+    int pwm = 60;
+    if (somme_us < 1300 || abs(delta_d) > 600)
+        pwm = 40;
+
+
     if (Voiture_Must_Run && !fin_course) {
         PIN_SERVO = 1;
-        PWM_Moteurs(50, 0);   //  max à 50...
+        PWM_Moteurs(pwm, 0);   //  max à 50...
         Demarrage_T5(pulse);
     }
     else {

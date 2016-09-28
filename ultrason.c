@@ -39,6 +39,8 @@
 // attente 50 ms entre 2 spikes
 volatile uint8_t cpt_arrivee = 0;
 volatile uint8_t fin_course = 0;
+volatile int delta_d = 0;
+volatile int somme_us = 0;
 
 volatile uint8_t Etat_Ultrason = 0;
 
@@ -59,7 +61,7 @@ uint8_t Ultrason_H_Detect = 0;
 
 extern volatile float direction;
 
-volatile int Threshold_US = ULTRASON_THRESOLD;
+volatile int Threshold_US = ULTRASON_THRESHOLD;
 
 // debug
 //volatile uint8_t Debug_Ultrason = 0;
@@ -99,12 +101,13 @@ void Init_Ultrasons (void)
     Ultrason_G_Detect = 0;
     Ultrason_D_Detect = 0;
     Ultrason_H_Detect = 0;
-    Threshold_US = ULTRASON_THRESOLD;
+    Threshold_US = ULTRASON_THRESHOLD;
     
-    OpenTimer4(T4_ON & T4_GATE_OFF & T4_PS_1_8 & T4_SOURCE_INT, 0xFFFF );
+    OpenTimer4(T4_ON & T4_GATE_OFF & T4_PS_1_8 & T4_SOURCE_INT, 5000 );
     // FCY = 40Meg   prescaler à 8 donc F timer = 5Meg
     // 1 coup = 200 ns = 0.2us
     // max = 65535 => 13.107 ms     // ce qui correspondra à de l'overshoot
+    // 5000 = 1 ms
 
     // configuration des interruptions
     ConfigIntTimer4(T4_INT_PRIOR_2 & T4_INT_ON); 
@@ -199,7 +202,8 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         Mesure_Distance_Ultrason_G = min(Mesure_Distance_Ultrason_G, DISTANCE_MAX);
         Mesure_Distance_Ultrason_D = min(Mesure_Distance_Ultrason_D, DISTANCE_MAX);
 
-        int delta_d = Mesure_Distance_Ultrason_G - Mesure_Distance_Ultrason_D;
+        delta_d = Mesure_Distance_Ultrason_G - Mesure_Distance_Ultrason_D;
+        somme_us = Mesure_Distance_Ultrason_G + Mesure_Distance_Ultrason_D;
         /*if (delta_d > DELTA_D_MAX)
             delta_d = DELTA_D_MAX;
         else if (delta_d < -DELTA_D_MAX)
@@ -217,17 +221,17 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         } else if ( abs(delta_d)>DELTA_D_MIN) {
             //on est entre 100 et 800
             direction = signe(delta_d) * linear_mapping( abs(delta_d), DELTA_D_MIN, DELTA_D_MAX, DIRECTION_MIN, DIRECTION_MAX );
-            //on passe la valeur absolue de [100,800] a [0,45] puis on multiplie par le signe
+            //on passe la valeur absolue de [20,650] a [0,45] puis on multiplie par le signe
         }
         
         //direction = (delta_d/1600.0)+1.5;
 
         if (Ultrason_H_Detect) {
-            if (Mesure_Distance_Ultrason_H > (Threshold_US + ULTRASON_THRESOLD_TRIGGER)) {
+            if (Mesure_Distance_Ultrason_H > (ULTRASON_THRESHOLD + ULTRASON_THRESHOLD_TRIGGER)) {
                 Ultrason_H_Detect = 0;    // passage en zone ok
             }
         } else {
-            if (Mesure_Distance_Ultrason_H < (Threshold_US - ULTRASON_THRESOLD_TRIGGER)) {
+            if (Mesure_Distance_Ultrason_H < (ULTRASON_THRESHOLD - ULTRASON_THRESHOLD_TRIGGER)) {
                 Ultrason_H_Detect = 1; // passage en zone occupé
                 cpt_arrivee++;
                 if (cpt_arrivee >= NB_TOURS)
