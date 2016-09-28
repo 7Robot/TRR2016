@@ -57,7 +57,7 @@ uint8_t Ultrason_G_Detect = 0;
 uint8_t Ultrason_D_Detect = 0;
 uint8_t Ultrason_H_Detect = 0;
 
-extern volatile int direction;
+extern volatile float direction;
 
 volatile int Threshold_US = ULTRASON_THRESOLD;
 
@@ -208,18 +208,19 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
             delta_d = 0;
         direction = 0.05625 * delta_d;       // Coef de pente pour passer de [-800:800] à [-45:45] => ((delta_d - 100)/(800-100))*45
         */
+        //__delay_ms(1);
+        
         direction = 0;//ditrection par defaut
-        if (fabsf(delta_d)>DELTA_D_MAX){
+        if (abs(delta_d)>DELTA_D_MAX){
             //on est au dela du seuil, on braque a fond
-            direction = DIRECTION_MAX;
-        } else if ( fabsf(delta_d)>DELTA_D_MIN) {
+            direction = signe(delta_d)*DIRECTION_MAX;
+        } else if ( abs(delta_d)>DELTA_D_MIN) {
             //on est entre 100 et 800
-            direction = signe(delta_d) * 
-                    linear_mapping( fabsf(delta_d),
-                    DELTA_D_MIN, DELTA_D_MAX,
-                    DIRECTION_MIN, DIRECTION_MAX );
+            direction = signe(delta_d) * linear_mapping( abs(delta_d), DELTA_D_MIN, DELTA_D_MAX, DIRECTION_MIN, DIRECTION_MAX );
             //on passe la valeur absolue de [100,800] a [0,45] puis on multiplie par le signe
         }
+        
+        //direction = (delta_d/1600.0)+1.5;
 
         if (Ultrason_H_Detect) {
             if (Mesure_Distance_Ultrason_H > (Threshold_US + ULTRASON_THRESOLD_TRIGGER)) {
@@ -366,9 +367,9 @@ float min(float a, float b){
 }
 
 float signe(float val){
-    if (val <0){
+    if (val < 0.0){
         return -1;
-    } else if (val > 0) {
+    } else if (val > 0.0) {
         return 1;
     } else {
         return 0;

@@ -7,7 +7,7 @@
 #include <timer.h>
 #include "Timer_ms.h"
 
-volatile int direction = 0;  //doit être compris entre -45° et 45°
+volatile float direction = 0;  //doit être compris entre -45° et 45°
 extern volatile int Voiture_Must_Run;
 extern volatile uint8_t fin_course;
 
@@ -54,9 +54,10 @@ void __attribute__((interrupt,auto_psv)) _T2Interrupt(void) {
     // mettre ici les pwm gauche et droit
     PWM_Moteurs(commande_g, commande_d); */
 
-    float pulse = (direction + 45)/90 + 0.5;
+    float pulse = (direction + 90)/90 + 0.5;
     
     // 2 ms => tourne à gauche
+    // 1.5 ms => tout droit.
     // 1 ms => tourne à droite (gentillement)
     // 0.9 ms => tourne à droite, bien...
    
