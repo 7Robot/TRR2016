@@ -196,8 +196,8 @@ void __attribute__((interrupt,auto_psv)) _T4Interrupt(void) {
         ///
         /// Calcul de la commande angulaire du servo-moteur
         ///
-        Mesure_Distance_Ultrason_G = min(Mesure_Distance_Ultrason_G, 800);
-        Mesure_Distance_Ultrason_D = min(Mesure_Distance_Ultrason_D, 800);
+        Mesure_Distance_Ultrason_G = min(Mesure_Distance_Ultrason_G, DISTANCE_MAX);
+        Mesure_Distance_Ultrason_D = min(Mesure_Distance_Ultrason_D, DISTANCE_MAX);
 
         int delta_d = Mesure_Distance_Ultrason_G - Mesure_Distance_Ultrason_D;
         /*if (delta_d > DELTA_D_MAX)
