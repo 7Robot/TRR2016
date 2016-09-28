@@ -128,8 +128,8 @@ void __attribute__((interrupt,auto_psv)) _T3Interrupt(void)
         Delay_90_Over = 0;
     } else if (Delay_90 == 90000) {
         Delay_90 ++;
-        IPC2bits.T3IP = 1;      // repassage low priority...
-        Delay_90_Over = 1;
+        // IPC2bits.T3IP = 1;      // repassage low priority...
+        // Delay_90_Over = 1;
     } else {
         Delay_90_Over = 1;
         if (!Active_Delay_90) {
